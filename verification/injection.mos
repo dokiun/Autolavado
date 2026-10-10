@@ -1,0 +1,11 @@
+﻿loadModel(Modelica,{"4.1.0"});
+loadFile("autolavado.mo"); getErrorString();
+checkModel(autolavado.SelfServiceCarWashTest); getErrorString();
+checkModel(autolavado.InjectionTest); getErrorString();
+checkModel(autolavado.ChemicalProtectionTest); getErrorString();
+cd("verification/build");
+simulate(autolavado.SelfServiceCarWashTest,stopTime=64,numberOfIntervals=3200,tolerance=1e-6,outputFormat="csv",fileNamePrefix="InjectionCycle"); getErrorString();
+simulate(autolavado.InjectionTest,stopTime=120,numberOfIntervals=6000,tolerance=1e-6,outputFormat="csv",fileNamePrefix="InjectionVented"); getErrorString();
+simulate(autolavado.ChemicalProtectionTest,stopTime=15,numberOfIntervals=1500,tolerance=1e-6,outputFormat="csv",fileNamePrefix="InjectionProtected"); getErrorString();
+simulate(autolavado.ChemicalProtectionTest,simflags="-override=failedCheck=true",stopTime=15,numberOfIntervals=1500,tolerance=1e-6,outputFormat="csv",fileNamePrefix="InjectionFailed"); getErrorString();
+

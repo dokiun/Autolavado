@@ -1,0 +1,25 @@
+{
+  "model_sha256": "8aee63d2b1b83d3f9c8f80856ea7598b51e15bc34e454e338adfb1bf3e8413b8",
+  "results": {
+    "prewash": {
+      "time_s": 18,
+      "chemical_L_min": 0.13686576374069662,
+      "throat_bar_g": -0.30402070054783575
+    },
+    "soap": {
+      "time_s": 33,
+      "chemical_L_min": 0.13686573453492987,
+      "throat_bar_g": -0.3040207123064966
+    },
+    "wax": {
+      "time_s": 48,
+      "chemical_L_min": 0.07380917583598443,
+      "throat_bar_g": -0.3292832858972752
+    }
+  },
+  "mass_residual_max_kg_s": 0.0,
+  "heater_energy_residual_max_W": 3.637978807091713e-12,
+  "maximum_simultaneous_open_branches": 1,
+  "status": "passed",
+  "limitations": "Low nozzle diameter, Cd and injector hydraulic coefficients are design assumptions, not a calibrated commercial curve."
+}

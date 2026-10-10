@@ -1,0 +1,7 @@
+loadModel(Modelica,{"4.1.0"});
+loadFile("autolavado.mo");
+setCommandLineOptions("--unitChecking");
+checkModel(autolavado.SelfServiceCarWashTest);
+getErrorString();
+writeFile("verification/model-instance.json",getModelInstance(autolavado.SelfServiceCarWashTest));
+getErrorString();

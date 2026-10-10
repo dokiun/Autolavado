@@ -1,0 +1,13 @@
+/verification/build/
+/verification/current/
+/verification/__pycache__/
+/.tooling/
+~$*.xlsx
+*_nuevo.xlsx
+*.pyc
+
+# Informes y metadatos historicos; no representan la configuracion actual.
+/verification/model-instance.json
+/verification/excel-original-inspection.json
+/verification/results/*
+!/verification/results/current-validation.json

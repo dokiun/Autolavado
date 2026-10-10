@@ -1,0 +1,14 @@
+﻿loadModel(Modelica, {"4.1.0"});
+loadFile("autolavado.mo"); getErrorString();
+checkModel(autolavado.HeatingTest); getErrorString();
+checkModel(autolavado.GasHeaterTest); getErrorString();
+cd("verification/build");
+simulate(autolavado.HeatingTest, stopTime=30, numberOfIntervals=1500, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebPlant"); getErrorString();
+simulate(autolavado.SelfServiceCarWashTest, stopTime=64, numberOfIntervals=3200, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebCycle"); getErrorString();
+simulate(autolavado.GasHeaterTest, stopTime=120, numberOfIntervals=1200, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebFull"); getErrorString();
+simulate(autolavado.GasHeaterTest, simflags="-override=scenario=1", stopTime=40, numberOfIntervals=400, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebFlame"); getErrorString();
+simulate(autolavado.GasHeaterTest, simflags="-override=scenario=2", stopTime=40, numberOfIntervals=400, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebVent"); getErrorString();
+simulate(autolavado.GasHeaterTest, simflags="-override=scenario=3", stopTime=120, numberOfIntervals=1200, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebOverheat"); getErrorString();
+simulate(autolavado.GasHeaterTest, simflags="-override=scenario=4", stopTime=40, numberOfIntervals=400, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebLowFlow"); getErrorString();
+simulate(autolavado.GasHeaterTest, simflags="-override=scenario=5", stopTime=120, numberOfIntervals=1200, tolerance=1e-6, outputFormat="csv", fileNamePrefix="HacebPower"); getErrorString();
+
