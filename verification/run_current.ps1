@@ -37,6 +37,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Fallo la validacion del ciclo actual.' }
     & $Python @taskPythonArgs 'verification/report_current.py'
     if ($LASTEXITCODE -ne 0) { throw 'Fallo la generacion del Excel.' }
+    & $Python @taskPythonArgs 'verification/plot_current.py'
+    if ($LASTEXITCODE -ne 0) { throw 'Fallo la generacion de las graficas.' }
 } finally {
     Pop-Location
 }

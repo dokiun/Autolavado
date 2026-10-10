@@ -45,6 +45,34 @@ En enjuague no hay aspiración química. La validación comprueba conservación 
 
 Estos valores son simulados. El diámetro de baja, Cd, curva de bomba y coeficientes hidráulicos del Venturi y las válvulas son supuestos ajustables; no constituyen curvas comerciales calibradas ni dosis garantizadas. El límite de presión de garganta puede actuar durante cambios de boquilla: esos transitorios requieren un modelo adicional para estudiar cavitación o golpe de ariete.
 
+## Gráficas del ciclo actual
+
+Generadas directamente del CSV de la simulación actual de dos boquillas. Las franjas indican las etapas químicas; cada etapa empieza con la purga previa a abrir su electroválvula. Son resultados simulados con los supuestos de diseño descritos arriba.
+
+### Presiones y vacío de aspiración
+
+![Presiones del Venturi y del manifold químico durante el ciclo](docs/figures/presiones.png)
+
+La vista inferior amplía las presiones de aspiración; las presiones altas quedan fuera de ese rango vertical. Una presión manométrica negativa indica presión inferior a la atmosférica.
+
+### Caudales de agua y químicos
+
+![Caudal principal y aspiración de prelavado, jabón y cera](docs/figures/caudales.png)
+
+Se distingue la extracción desde cada tanque del caudal que entra al inyector. Pueden diferir durante los transitorios por el líquido almacenado en las ramas y el manifold.
+
+### Temperaturas
+
+![Temperaturas del calentador y de descarga durante el ciclo](docs/figures/temperaturas.png)
+
+Desde los 57 s la pistola está cerrada. Las temperaturas en ese tramo corresponden al agua retenida, sin entrega continua al exterior.
+
+Para regenerar solo las gráficas después de simular y validar:
+
+```powershell
+py -3 verification/plot_current.py
+```
+
 ## Abrir y ejecutar
 
 1. Instalar OpenModelica con Modelica 4.1.0 y Python 3.
@@ -52,7 +80,7 @@ Estos valores son simulados. El diámetro de baja, Cd, curva de bomba y coeficie
 3. Seleccionar `autolavado.SelfServiceCarWashTest` y simular.
 4. Abrir `plant` para inspeccionar los equipos.
 
-Para ejecutar simulación, validación y generación del Excel desde PowerShell, en la raíz del proyecto:
+Para ejecutar simulación, validación y generación del Excel y las gráficas desde PowerShell, en la raíz del proyecto:
 
 ```powershell
 py -3 -m pip install -r requirements.txt
