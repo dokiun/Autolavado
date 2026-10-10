@@ -271,6 +271,57 @@ sheet('Pistola_cerrada','CIRCUITO CON PISTOLA CERRADA',[
     data('Caudal de descarga','plant.outletFlow_L_min','L/min',time=58),
     data('Caudal por bypass','plant.bypassFlow_L_min','L/min',time=58),
 ],58)
+def number(value, digits=3):
+    return f'{value:.{digits}f}'.replace('.', ',')
+
+def pg(key, time=9):
+    return (get(key,time)-patm)/1e5
+
+def temp(key, time=9):
+    return get(key,time)-273.15
+
+def scaled(key, factor, time=9):
+    return get(key,time)*factor
+
+decisions = sheet('Decisiones_diseno', 'DECISIONES DE DISEÑO BASADAS EN LA SIMULACIÓN', [
+    ('Boquillas', 'Usar alta de 1,15 mm en enjuague y baja de 4,6 mm al aplicar químicos.',
+     'Alta: '+number(pg('plant.injectorInletPressure'))+' bar(g) en entrada del Venturi a 9 s. Baja: '+number(pg('plant.injectorOutletPressure',33))+' bar(g) en salida a 33 s.',
+     'Decisión de diseño provisional', 'plant.gun.activeNozzleDiameter; plant.injectorInletPressure / OutletPressure. Confirmar diámetro de baja y Cd con la boquilla comercial.'),
+    ('Inyección downstream', 'Conservar el inyector después de la hidrolavadora y aplicar químicos con baja contrapresión.',
+     'Garganta en jabón: '+number(pg('plant.throatPressure',33))+' bar(g); aspiración: '+number(scaled('plant.injector.mChemical',60000/rho,time=33))+' L/min.',
+     'Respaldado por el modelo', 'plant.throatPressure y plant.injector.mChemical, t=33 s. General Pump 100819 es referencia comercial; los coeficientes hidráulicos siguen sin calibrar.'),
+    ('Dosificación', 'Mantener ajuste manual por aguja y calibrar cada producto por separado.',
+     'Prelavado: '+number(scaled('plant.injector.mChemical',60000/rho,time=18))+'; jabón: '+number(scaled('plant.injector.mChemical',60000/rho,time=33))+'; cera: '+number(scaled('plant.injector.mChemical',60000/rho,time=48))+' L/min.',
+     'Dosis estimadas, no garantizadas', 'Instantáneas a 18, 33 y 48 s; no son promedios de etapa. Los químicos se representan como agua: confirmar viscosidad, densidad y concentración real.'),
+    ('Tanques y sifones', 'Usar tapas con respiradero y conservar sifones de 12,7 mm interiores.',
+     'Extracción desde tanque en jabón: '+number(scaled('plant.soap.tankDraw',60000/rho,time=33))+' L/min; manifold: '+number(pg('plant.chemicalManifoldPressure',33))+' bar(g).',
+     'Configuración viable en el modelo', 'Tanques atmosféricos y mangueras cebadas ideales. Longitud de 2 m y elevación de 0,5 m son supuestos; no se comparó esta ejecución con un tanque hermético.'),
+    ('Selección y purga', 'Abrir una sola electroválvula y seleccionar baja presión durante la purga previa de 2 s.',
+     'Apertura de la NC de jabón: '+number(get('plant.soap.solenoid.opening',33),0)+'; bloqueo de inyección: '+number(get('plant.chemicalInjectionBlocked',33),0)+'.',
+     'Lógica comprobada en el ciclo', 'ProgramController y current-validation.json: máximo una rama abierta. La selección ideal representa el cambio de boquilla por el operador; 2 s no certifican limpieza ni eliminación de residuos químicos.'),
+    ('Calentador externo', 'Mantener entrada a 13 °C y ajuste manual de gas al máximo; usar temperatura con caudal para evaluar el servicio.',
+     'Antes del cierre (55 s): '+number(temp('plant.inletHeater.T',55),2)+' °C. Final sin flujo (64 s): '+number(temp('plant.inletHeater.T',64),2)+' °C.',
+     'Configuración térmica simulada', 'plant.inletHeater.T y m_flow. La temperatura a 64 s corresponde a agua retenida. Confirmar potencia útil del HACEB y compatibilidad térmica real de la TRENT.'),
+    ('Protección de presión', 'Clasificar componentes de alta presión por el máximo del circuito; no por la presión baja durante aplicación.',
+     'Presión retenida con pistola cerrada (58 s): '+number(pg('plant.pumpOutletPressure',58),2)+' bar(g); descarga: '+number(get('plant.outletFlow_L_min',58))+' L/min.',
+     'Selección mecánica pendiente', 'plant.pumpOutletPressure. Límite parametrizado de bomba: 130 bar; añadir criterios físicos de transitorios y margen al seleccionar equipos. No se simularon golpes de ariete.'),
+    ('Electroválvulas químicas', 'Seleccionar NC aptas para aspiración y verificar aislamiento mediante checks.',
+     'Jabón a 33 s: entrada NC '+number(pg('plant.soap.valveInletPressure',33))+'; salida NC '+number(pg('plant.soap.valveOutletPressure',33))+' bar(g).',
+     'Especificación por confirmar', 'Presiones normales de simulación, no ratings de compra. Compatibilidad de sellos, diferencial mínimo, vacío admisible y escenarios de fallo de checks deben confirmarse.'),
+    ('Validez del diseño', 'Calibrar el prototipo antes de adoptar dosis y presiones como especificaciones finales.',
+     'La validación actual comprueba balances, exclusividad, aspiración y cierre.',
+     'Validación del modelo, no del equipo', 'verification/results/current-validation.json. Los coeficientes de bomba, inyector, válvulas y Cd son supuestos. El límite de garganta puede actuar durante cambios de boquilla.'),
+])
+decisions['A2'] = 'Ciclo actual de 0–64 s · Evidencias e implicaciones de diseño · Resultados simulados, pendientes de calibración física'
+for col, heading in enumerate(['Equipo / aspecto', 'Decisión de diseño', 'Resultado que la respalda', 'Estado', 'Fuente / limitación'],1):
+    decisions.cell(4,col).value = heading
+widths = [27, 46, 48, 29, 65]
+for col,width in zip('ABCDE',widths):
+    decisions.column_dimensions[col].width = width
+for row in decisions.iter_rows(min_row=5):
+    lines = max(len(textwrap.wrap(str(c.value or ''),max(8,int(widths[i]*.9)))) for i,c in enumerate(row))
+    decisions.row_dimensions[row[0].row].height = max(48,lines*16+12)
+
 sha=hashlib.sha256((ROOT/'autolavado.mo').read_bytes()).hexdigest()
 sheet('Fuentes','FUENTES DE LOS RESULTADOS',[
     text('Modelo simulado','autolavado.SelfServiceCarWashTest','Fuente: autolavado.mo actual.'),

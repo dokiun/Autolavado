@@ -4,6 +4,9 @@ Modelo hidráulico y térmico de un autolavado con calentador externo HACEB, hid
 
 ## Circuito actual
 
+![Circuito actual](docs/figures/sistema.png)
+
+
 ```text
 Agua a 13 °C → HACEB → TRENT → acumulador y alivio → Venturi
              → manguera de 8 m → pistola → boquilla → ambiente
